@@ -103,13 +103,13 @@ For local development, it is recommended to use a local Kubernetes cluster like 
 1. Clone this repository:
 
 ```bash
-git clone https://github.com/paradedb/helm-charts && cd charts
+git clone https://github.com/paradedb/helm-charts && cd helm-charts
 ```
 
 2. Change into the charts directory:
 
 ```bash
-cd helm-charts/charts
+cd charts/paradedb/
 ```
 
 3. Build dependencies:
@@ -121,7 +121,7 @@ helm dep up
 4. Install the chart using Helm:
 
 ```bash
-helm install paradedb paradedb --namespace paradedb --create-namespace
+helm install paradedb . --namespace paradedb --create-namespace
 ```
 
 You are now all set to start developing and testing locally!

@@ -65,7 +65,7 @@ cluster:
     shared_preload_libraries:
       - pgaudit
       - pg_cron
-      - pg_lakehouse
+      - pg_analytics
       - pg_search
 
   # Bootstrap configuration for the database
@@ -77,8 +77,9 @@ cluster:
       #   name: cluster-example-app-user
       postInitApplicationSQL:
         - CREATE EXTENSION IF NOT EXISTS "pg_search";
-        - CREATE EXTENSION IF NOT EXISTS "pg_lakehouse";
+        - CREATE EXTENSION IF NOT EXISTS "pg_analytics";
         - CREATE EXTENSION IF NOT EXISTS "pg_cron";
+        - CREATE EXTENSION IF NOT EXISTS "pg_ivm";
         - CREATE EXTENSION IF NOT EXISTS "vector";
         - CREATE EXTENSION IF NOT EXISTS "vectorscale";
         - ALTER DATABASE paradedb SET search_path TO public,paradedb;
