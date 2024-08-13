@@ -49,30 +49,31 @@ sudo apt-get install helm -y
 
 Then, install the CloudNativePG operator. This chart does not include the Custom Resource Definitions (CRDs) from the CloudNativePG Operator, and it doesn't explicitly depend on it due to Helm's constraints with CRD management. As such, the operator itself is not bundled within this chart and needs to be downloaded manually.
 
-# TODO: This might need to be done after, the upgrade part
-
 ```bash
 helm repo add cnpg https://cloudnative-pg.github.io/charts
-helm upgrade --install cnpg --namespace cnpg-system --create-namespace cnpg/cloudnative-pg
 ```
 
 It is also possible to install it directly using the manifest. See the CloudNativePG operator's [installation documentation](https://cloudnative-pg.io/documentation/1.21/installation_upgrade/#installation-on-kubernetes) for more information.
 
 ## Usage
 
-The steps below assume you have an accessible Kubernetes cluster with at least v1.21.
+The steps below assume you have an accessible Kubernetes cluster running Kubernetes v1.21+.
 
 ### Installing the ParadeDB Helm Chart
 
-The recommended installation for the ParadeDB Helm chart is via [Artifact Hub](https://artifacthub.io/packages/helm/paradedb/paradedb).
+The recommended installation for the ParadeDB Helm chart is via [Artifact Hub](https://artifacthub.io/packages/helm/paradedb/paradedb). If you prefer to install it manually, first install CloudNativePG onto your Kubernetes cluster.
 
-If you prefer to install it manually, first add the ParadeDB repository to Helm. If you had previously added the repository, instead run `helm repo update` to retrieve the latest versions of the packages. You can then run `helm search repo paradedb` to see the chart and its version.
+```bash
+helm upgrade --install cnpg --namespace cnpg-system --create-namespace cnpg/cloudnative-pg
+```
+
+Then, add the ParadeDB repository to Helm. If you had previously added the repository, instead run `helm repo update` to retrieve the latest versions of the packages. You can then run `helm search repo paradedb` to see the chart and its version.
 
 ```bash
 helm repo add paradedb https://paradedb.github.io/helm-charts
 ```
 
-Then, install the `paradedb` chart:
+Lastly, install the `paradedb` chart. You can update `<mydatabase>` to the value of your choice.
 
 ```bash
 helm install <mydatabase> paradedb/paradedb
@@ -80,7 +81,31 @@ helm install <mydatabase> paradedb/paradedb
 
 That's it! If you need, you can uninstall the chart with `helm delete <mydatabase>`.
 
-TODO: Add details on how to retrieve the access.
+### Connecting to the ParadeDB CloudNativePG K8s Cluster
+
+To connect to your ParadeDB Kubernetes cluster, follow the instructions below. These instructions are also available in `charts/paradedb/templates/NOTES.txt` and are displayed after running the `helm install` command.
+
+First, retrieve the base64-encoded credentials to the Postgres cluster.
+
+```bash
+kubectl -n default get secrets paradedb-app -o yaml
+```
+
+You can then decode them via `echo '<value>' | base64 --decode`. You need to decode `dbname`, `host`, `password`, `port` and `user`. Then, access your Kubernetes cluster as you normally would and connect via psql, providing the `password` when promoted.
+
+```bash
+psql -h <host> -p <port> -U <user> -d <dbname> -W
+```
+
+NOTE: If you are trying to access the cluster from outside of Kubernetes, the simplest approach is to forward the Postgres port, `5432`, and connect over `localhost`.
+
+```bash
+# Forward the port
+kubectl port-forward svc/paradedb-rw 5432:5432
+
+# In a new terminal
+psql -h localhost -p 5432 -U <user> -d <mydb> -W
+```
 
 ### Configuring the ParadeDB Helm Chart
 
@@ -108,7 +133,7 @@ Then, start your local Kubernetes cluster:
 minikube start
 ```
 
-Then, install the CloudNative PG CRD:
+Then, install the CloudNativePG CRD:
 
 ```bash
 helm upgrade --install cnpg --namespace cnpg-system --create-namespace cnpg/cloudnative-pg
@@ -117,12 +142,11 @@ helm upgrade --install cnpg --namespace cnpg-system --create-namespace cnpg/clou
 Then, install the ParadeDB Helm chart:
 
 ```bash
-git clone https://github.com/paradedb/helm-charts
-cd helm-charts/charts/paradedb/
+git clone https://github.com/paradedb/helm-charts && cd helm-charts/charts/paradedb/
 helm install paradedb . --namespace paradedb --create-namespace
 ```
 
-That's it! You're now ready to start developing the ParadeDB Helm chart.
+That's it! You're now ready to start developing the ParadeDB Helm chart. To troubleshoot Kubernetes errors, see [Debugging](#debugging). To access the Postgres cluster, see [Connecting to the ParadeDB CloudNativePG K8s Cluster](#connecting-to-the-paradedb-cloudnativepg-k8s-cluster).
 
 ### Debugging
 

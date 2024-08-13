@@ -1,3 +1,25 @@
-Thanks for installing ParadeDB! You can check your Postgres credentials by running:
+
+Welcome to ParadeDB!
+
+Thank you for installing the ParadeDB Helm chart. To access your ParadeDB Postgres database, run:
 
 $ kubectl -n {{ .Release.Namespace }} get secrets {{ include "cluster.name" . }}-app -o yaml
+
+This will return the database parameters encoded in base64. You can decrypt them via:
+
+$ echo '<value>' | base64 --decode
+
+You need to decode `dbname`, `host`, `password`, `port` and `user`. You can then connect to your
+ParadeDB cluster via psql:
+
+$ psql -h <host> -p <port> -U <user> -d <dbname> -W
+
+NOTE: If you are trying to access the cluster from outside of Kubernetes, the simplest approach is to forward the Postgres port, `5432`, and connect over `localhost`.
+
+$ kubectl port-forward svc/paradedb-rw 5432:5432
+
+Then, in a new terminal:
+
+$ psql -h localhost -p 5432 -U <user> -d <mydb> -W
+
+For assistance, or to purchase a commercial license of ParadeDB, please contact us at support@paradedb.com.

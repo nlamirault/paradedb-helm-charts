@@ -82,18 +82,18 @@ cluster:
       - CREATE EXTENSION IF NOT EXISTS vector;
       - CREATE EXTENSION IF NOT EXISTS vectorscale;
       - ALTER DATABASE paradedb SET search_path TO public,paradedb;
+      - ALTER USER paradedb WITH SUPERUSER;
     postInitTemplateSQL:
       - ALTER DATABASE template1 SET search_path TO public,paradedb;
-      # - CREATE DATABASE template_paradedb IS_TEMPLATE true;
-      # # Load extensions into template_paradedb
-      # - \c template_paradedb
+      # # - CREATE DATABASE template_paradedb IS_TEMPLATE true;
+      # # # Load extensions into template_paradedb
       # - CREATE EXTENSION IF NOT EXISTS pg_search;
       # - CREATE EXTENSION IF NOT EXISTS pg_analytics;
       # - CREATE EXTENSION IF NOT EXISTS pg_cron;
       # - CREATE EXTENSION IF NOT EXISTS pg_ivm;
       # - CREATE EXTENSION IF NOT EXISTS vector;
       # - CREATE EXTENSION IF NOT EXISTS vectorscale;
-      # - ALTER DATABASE template_paradedb SET search_path TO public,paradedb;
+      # # - ALTER DATABASE template_paradedb SET search_path TO public,paradedb;
 
 
   # Storage configurations for the cluster
@@ -197,6 +197,9 @@ cluster:
     # AdditionalPodAffinity allows to specify pod affinity terms to
     # be passed to all the cluster's pods
     # additionalPodAffinity: {}
+
+  # Enable Pod Disruption Budget
+  enablePDB: true
 
   # Node maintenance configurations
   nodeMaintenanceWindow:
