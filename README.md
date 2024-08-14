@@ -67,7 +67,7 @@ The recommended installation for the ParadeDB Helm chart is via [Artifact Hub](h
 helm upgrade --install cnpg --namespace cnpg-system --create-namespace cnpg/cloudnative-pg
 ```
 
-Then, add the ParadeDB repository to Helm. If you had previously added the repository, instead run `helm repo update` to retrieve the latest versions of the packages. You can then run `helm search repo paradedb` to see the chart and its version.
+Wait a few seconds for CloudNativePG to initialize, then add the ParadeDB repository to Helm. If you had previously added the repository, instead run `helm repo update` to retrieve the latest versions of the packages. You can then run `helm search repo paradedb` to see the chart and its version.
 
 ```bash
 helm repo add paradedb https://paradedb.github.io/helm-charts
@@ -89,6 +89,7 @@ First, retrieve the base64-encoded credentials to the Postgres cluster.
 
 ```bash
 kubectl -n default get secrets paradedb-app -o yaml
+kubectl -n paradedb get secrets paradedb-app -o yaml
 ```
 
 You can then decode them via `echo '<value>' | base64 --decode`. You need to decode `dbname`, `host`, `password`, `port` and `user`. Then, access your Kubernetes cluster as you normally would and connect via psql, providing the `password` when promoted.
@@ -102,6 +103,7 @@ NOTE: If you are trying to access the cluster from outside of Kubernetes, the si
 ```bash
 # Forward the port
 kubectl port-forward svc/paradedb-rw 5432:5432
+kubectl -n paradedb port-forward service/paradedb-rw 5432:5432
 
 # In a new terminal
 psql -h localhost -p 5432 -U <user> -d <mydb> -W
@@ -139,7 +141,7 @@ Then, install the CloudNativePG CRD:
 helm upgrade --install cnpg --namespace cnpg-system --create-namespace cnpg/cloudnative-pg
 ```
 
-Then, install the ParadeDB Helm chart:
+Wait a few seconds for CloudNativePG to initialize, then install the ParadeDB Helm chart:
 
 ```bash
 git clone https://github.com/paradedb/helm-charts && cd helm-charts/charts/paradedb/
@@ -153,13 +155,13 @@ That's it! You're now ready to start developing the ParadeDB Helm chart. To trou
 To list the pods, run:
 
 ```bash
-kubectl get all
+kubectl -n paradedb get all
 ```
 
 You will be able to see the status of each pod, which is useful for debugging issues with Postgres' initdb process. To retrieve logs for a specific pod, run:
 
 ```bash
-kubectl logs <pod>
+kubectl -n paradedb logs <pod>
 ```
 
 ## License
