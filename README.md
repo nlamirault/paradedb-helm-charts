@@ -153,13 +153,13 @@ That's it! You're now ready to start developing the ParadeDB Helm chart. To trou
 To list the pods, run:
 
 ```bash
-kubectl -n paradedb get all
+kubectl get all
 ```
 
 You will be able to see the status of each pod, which is useful for debugging issues with Postgres' initdb process. To retrieve logs for a specific pod, run:
 
 ```bash
-kubectl -n paradedb logs <pod>
+kubectl logs <pod>
 ```
 
 ## License
