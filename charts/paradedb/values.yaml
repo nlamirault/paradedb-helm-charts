@@ -163,8 +163,9 @@ cluster:
   # replicationTLSSecret: my-postgres-client-cert
 
   # Monitoring
-  monitoring:
-    enablePodMonitor: true
+  # TODO: Reenable podmonitor once we bundle in the relevant CRDs
+  # monitoring:
+  #   enablePodMonitor: true
     # customQueriesConfigMap:
     #   - name: example-monitoring
     #     key: custom-queries
